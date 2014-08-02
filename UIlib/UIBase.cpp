@@ -7,6 +7,9 @@
    #pragma comment(lib, "shlwapi.lib")
 #endif
 
+#ifndef GWLP_USERDATA
+#define GWLP_USERDATA GWL_USERDATA
+#endif
 
 /////////////////////////////////////////////////////////////////////////////////////
 //
@@ -18,7 +21,7 @@ void UILIB_API __Trace(LPCTSTR pstrFormat, ...)
    TCHAR szBuffer[300] = { 0 };
    va_list args;
    va_start(args, pstrFormat);
-   ::wvnsprintf(szBuffer, lengthof(szBuffer) - 2, pstrFormat, args);
+   //wvnsprintf(szBuffer, lengthof(szBuffer) - 2, pstrFormat, args); FIXME: VC6 no wvnsprintf?!
    _tcscat(szBuffer, _T("\n"));
    va_end(args);
    ::OutputDebugString(szBuffer);
@@ -409,13 +412,13 @@ LRESULT CALLBACK CWindowWnd::__WndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPAR
       LPCREATESTRUCT lpcs = reinterpret_cast<LPCREATESTRUCT>(lParam);
       pThis = static_cast<CWindowWnd*>(lpcs->lpCreateParams);
       pThis->m_hWnd = hWnd;
-      ::SetWindowLongPtr(hWnd, GWLP_USERDATA, reinterpret_cast<LPARAM>(pThis));
+      SetWindowLong(hWnd, GWLP_USERDATA, reinterpret_cast<LPARAM>(pThis));
    } 
    else {
-      pThis = reinterpret_cast<CWindowWnd*>(::GetWindowLongPtr(hWnd, GWLP_USERDATA));
+      pThis = reinterpret_cast<CWindowWnd*>(GetWindowLong(hWnd, GWLP_USERDATA));
       if( uMsg == WM_NCDESTROY && pThis != NULL ) {
          LRESULT lRes = ::CallWindowProc(pThis->m_OldWndProc, hWnd, uMsg, wParam, lParam);
-         ::SetWindowLongPtr(pThis->m_hWnd, GWLP_USERDATA, 0L);
+         SetWindowLong(pThis->m_hWnd, GWLP_USERDATA, 0L);
          if( pThis->m_bSubclassed ) pThis->Unsubclass();
          pThis->m_hWnd = NULL;
          pThis->OnFinalMessage(hWnd);

@@ -2,6 +2,9 @@
 #include "StdAfx.h"
 #include "UIPanel.h"
 
+#ifndef IDC_HAND
+#define IDC_HAND MAKEINTRESOURCE(32649)
+#endif
 
 /////////////////////////////////////////////////////////////////////////////////////
 //
